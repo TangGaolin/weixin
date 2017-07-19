@@ -54,9 +54,25 @@ class IndexController extends Controller
         return $response->send();
     }
 
-
+    // 拓客活动1 正常用户进入参与活动
     public function userShare()
     {
+        //获取openID
+
+        //获取状态后
+
+
+
+    }
+
+    // 拓客活动1 被邀请人进入邀请页面
+    public function getUserShare()
+    {
+
+        //获取openID
+
+        //根据订单ID，查询是否绑定状态
+
 
 
 
