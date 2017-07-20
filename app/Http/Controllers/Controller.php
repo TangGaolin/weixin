@@ -28,5 +28,17 @@ class Controller extends BaseController
         }
     }
 
+    protected function success($data = null)
+    {
+        $returnData = [
+            'statusCode' => config('response_code.STATUSCODE_SUCCESS'),
+            'msg'        => config('response_code.MSG_OK'),
+            'success'    => true
+        ];
+        $data && $returnData['data'] = $data;
+
+        return response()->json($returnData);
+    }
+
 
 }
