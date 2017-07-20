@@ -8,7 +8,7 @@
 
 namespace App\Http\Controllers;
 use EasyWeChat\Foundation\Application;
-
+use Request;
 class IndexController extends Controller
 {
     protected $weixinApp;
@@ -54,12 +54,33 @@ class IndexController extends Controller
         return $response->send();
     }
 
+    protected function getOpenId($target_url)
+    {
+        $user = Request::session()->get('wechat_user');
+        if(!$user){
+            Request::session()->put('target_url',$target_url);
+            return $this->weixinApp->oauth->redirect();
+        }
+        return $user;
+    }
+
+    public function callback()
+    {
+        $user = $this->weixinApp->oauth->user();
+        Request::session()->put('wechat_user', $user->toArray());
+        $target_url = Request::session()->get('target_url');
+        $targetUrl = empty($target_url) ? '/' : $target_url;
+        header('Location:'.$targetUrl);
+        exit();
+    }
+
+
     // 拓客活动1 正常用户进入参与活动
     public function userShare()
     {
         //获取openID
-
-        //获取状态后
+        $userInfo = $this->getOpenIdNew('/activtity/userShare');
+        dd($userInfo);
 
 
 

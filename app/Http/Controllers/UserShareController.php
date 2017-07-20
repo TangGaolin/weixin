@@ -44,7 +44,7 @@ class UserShareController extends Controller
     }
 
     // 用户下单购买
-    public function buyItems()
+    public function buyItem()
     {
 
 

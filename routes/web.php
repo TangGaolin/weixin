@@ -17,5 +17,10 @@ Route::get('/', function () {
 
 Route::get('/callback/index', 'IndexController@index');
 
-//你请客，我花钱活动
+Route::get('/oauth_callback', 'IndexController@callback');
+
+//拓客活动1  重新定向路由
 Route::get('/activity/userShare', 'IndexController@userShare');
+Route::get('/activity/getUserShare', 'IndexController@getUserShare');
+//
+Route::get('/activity/buyItem', 'UserShareController@buyItem');

@@ -41,7 +41,7 @@ return [
      */
     'oauth' => [
         'scopes'   => ['snsapi_userinfo'],
-        'callback' => '/examples/oauth_callback.php',
+        'callback' => '/oauth_callback',
     ],
     /**
      * 微信支付
