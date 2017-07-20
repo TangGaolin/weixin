@@ -48,7 +48,7 @@ return [
      */
     'payment' => [
         'merchant_id'        => env('MERCHANT_ID'),
-        'key'                => env('b8d92c592d25ca147fd8cc9961b1fec8'),
+        'key'                => env('PAY_KEY'),
         'cert_path'          => '/data/app/.conf/apiclient_cert.pem', // XXX: 绝对路径！！！！
         'key_path'           => '/data/app/.conf/apiclient_key.pem',  // XXX: 绝对路径！！！！
         'notify_url'         => '/pay_callback',       // 你也可以在下单时单独设置来想覆盖它
