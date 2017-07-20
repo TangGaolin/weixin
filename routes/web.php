@@ -17,10 +17,11 @@ Route::get('/', function () {
 
 Route::get('/callback/index', 'IndexController@index');
 
-Route::get('/oauth_callback', 'IndexController@callback');
+Route::get('/oauth_callback', 'IndexController@callback'); //网页授权回调
+Route::get('/pay_callback', 'IndexController@payCallback'); //支付授权回调
 
 //拓客活动1  重新定向路由
-Route::get('/activity/userShare', 'IndexController@userShare');
-Route::get('/activity/getUserShare', 'IndexController@getUserShare');
+Route::get('/activity/userShare', 'UserShareController@userShare');
+Route::get('/activity/getUserShare', 'UserShareController@getUserShare');
 //
 Route::get('/activity/buyItem', 'UserShareController@buyItem');

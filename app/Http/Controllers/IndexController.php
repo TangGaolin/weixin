@@ -54,52 +54,45 @@ class IndexController extends Controller
         return $response->send();
     }
 
-    protected function getOpenId($target_url)
-    {
-        $user = Request::session()->get('wechat_user');
-        if(!$user){
-            Request::session()->put('target_url',$target_url);
-            return $this->weixinApp->oauth->redirect();
-        }
-        return $user;
-    }
-
+    // 网页授权回调
     public function callback()
     {
         $user = $this->weixinApp->oauth->user();
         Request::session()->put('wechat_user', $user->toArray());
         $target_url = Request::session()->get('target_url');
         $targetUrl = empty($target_url) ? '/' : $target_url;
-        header('Location:'.$targetUrl);
-        exit();
+        return redirect(config('app.url') . '/' . $targetUrl);
     }
 
-
-    // 拓客活动1 正常用户进入参与活动
-    public function userShare()
-    {
-        //获取openID
-        $userInfo = $this->getOpenIdNew('/activtity/userShare');
-        dd($userInfo);
-
-
-
-    }
-
-    // 拓客活动1 被邀请人进入邀请页面
-    public function getUserShare()
+    //支付成功回调
+    public function payCallback()
     {
 
-        //获取openID
-
-        //根据订单ID，查询是否绑定状态
-
-
-
+        $response = $this->weixinApp->payment->handleNotify(function($notify, $successful){
+            // 使用通知里的 "微信支付订单号" 或者 "商户订单号" 去自己的数据库找到订单
+//            $order = $this->getOrder($notify->out_trade_no);
+//            if (!$order) { // 如果订单不存在
+//                return 'Order not exist.'; // 告诉微信，我已经处理完了，订单没找到，别再通知我了
+//            }
+//            // 如果订单存在
+//            // 检查订单是否已经更新过支付状态
+//            if ($order->paid_at) { // 假设订单字段“支付时间”不为空代表已经支付
+//                return true; // 已经支付成功了就不再更新了
+//            }
+//            // 用户是否支付成功
+//            if ($successful) {
+//                // 不是已经支付状态则修改为已经支付状态
+//                $order->paid_at = time(); // 更新支付时间为当前时间
+//                $order->status = 'paid';
+//            } else { // 用户支付失败
+//                $order->status = 'paid_fail';
+//            }
+//            $order->save(); // 保存订单
+            return true; // 返回处理完成
+        });
+        return $response;
 
     }
-
-
 
 
 

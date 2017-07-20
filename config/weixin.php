@@ -47,10 +47,11 @@ return [
      * 微信支付
      */
     'payment' => [
-        'merchant_id'        => 'your-mch-id',
-        'key'                => 'key-for-signature',
-        'cert_path'          => 'path/to/your/cert.pem', // XXX: 绝对路径！！！！
-        'key_path'           => 'path/to/your/key',      // XXX: 绝对路径！！！！
+        'merchant_id'        => env('MERCHANT_ID'),
+        'key'                => env('b8d92c592d25ca147fd8cc9961b1fec8'),
+        'cert_path'          => '/data/app/.conf/apiclient_cert.pem', // XXX: 绝对路径！！！！
+        'key_path'           => '/data/app/.conf/apiclient_key.pem',  // XXX: 绝对路径！！！！
+        'notify_url'         => '/pay_callback',       // 你也可以在下单时单独设置来想覆盖它
         // 'device_info'     => '013467007045764',
         // 'sub_app_id'      => '',
         // 'sub_merchant_id' => '',
