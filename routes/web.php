@@ -24,4 +24,4 @@ Route::get('/pay_callback', 'IndexController@payCallback'); //支付授权回调
 Route::get('/activity/userShare', 'UserShareController@userShare');
 Route::get('/activity/getUserShare', 'UserShareController@getUserShare');
 //
-Route::get('/activity/buyItem', 'UserShareController@buyItem');
+Route::post('/activity/buyItem', 'UserShareController@buyItem');
