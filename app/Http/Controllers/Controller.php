@@ -40,5 +40,16 @@ class Controller extends BaseController
         return response()->json($returnData);
     }
 
+    protected function fail($statusCode = 101, $msg = 'system error')
+    {
+        $returnData = [
+            'statusCode' => $statusCode,
+            'msg'        => $msg,
+            'success'    => false
+        ];
+
+        return response()->json($returnData);
+    }
+
 
 }

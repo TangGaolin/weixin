@@ -16,6 +16,7 @@ Route::get('/', function () {
 });
 
 Route::get('/callback/index', 'IndexController@index');
+Route::post('/jsSdkData', 'IndexController@jsSdkData');
 
 Route::get('/oauth_callback', 'IndexController@callback'); //网页授权回调
 Route::get('/pay_callback', 'IndexController@payCallback'); //支付授权回调
@@ -25,3 +26,4 @@ Route::get('/activity/userShare', 'UserShareController@userShare');
 Route::get('/activity/getUserShare', 'UserShareController@getUserShare');
 //
 Route::post('/activity/buyItem', 'UserShareController@buyItem');
+Route::post('/userShare/pay_callback', 'UserShareController@payCallback'); //支付授权回调

@@ -10,6 +10,11 @@ export function buyItem(params) {
     });
 }
 
-
-
-
+export function jsSdkData(params) {
+    const data = params
+    return fetch({
+        url:  process.env.API_ROOT + '/jsSdkData',
+        method: 'post',
+        data
+    });
+}

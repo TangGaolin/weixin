@@ -64,6 +64,12 @@ class IndexController extends Controller
         return redirect(config('app.url') . '/' . $targetUrl);
     }
 
+    // jssdk api
+    public function jsSdkData()
+    {
+        return $this->weixinApp->js->config(['onMenuShareTimeline, onMenuShareAppMessage'], true, false, false);
+    }
+
     //支付成功回调
     public function payCallback()
     {
