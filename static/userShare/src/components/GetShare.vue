@@ -16,7 +16,7 @@
 
                 <section>
                     <div class="weui-btn-area" v-if = "0 == orderDetail.bind_status">
-                        <button class="weui-btn weui-btn_primary" id="showTooltips" v-on:click="sharePage">分享给你要请客的好友</button>
+                        <button class="weui-btn weui-btn_primary" id="showTooltips" v-on:click="sharePage">点击领取</button>
                     </div>
                 </section>
             </section>

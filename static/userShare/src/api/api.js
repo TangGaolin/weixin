@@ -10,6 +10,15 @@ export function buyItem(params) {
     });
 }
 
+export function getOrderInfo(params) {
+    const data = params
+    return fetch({
+        url:  process.env.API_ROOT + '/userShare/getOrderInfo',
+        method: 'post',
+        data
+    });
+}
+
 export function jsSdkData(params) {
     const data = params
     return fetch({

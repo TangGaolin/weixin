@@ -33,7 +33,57 @@ class UserShareController extends Controller
             return $this->weixinApp->oauth->redirect();
         }
 
-        return redirect(config('app.url') . '/userShare/dist/index.html');
+        //获取成功支付的订单信息
+        $order = $this->userShareService->getOrderInfo([
+            'open_id' => $user['id'],
+            'status'  => 1,
+        ]);
+
+        if($order){
+            return redirect(config('app.url') . '/userShare/dist/index.html#/share?order_id=' . $order['order_id']);
+        }
+        return redirect(config('app.url') . '/userShare/dist/index.html#/index');
+    }
+
+    public function getOrderInfo()
+    {
+
+        $param = [
+            'order_id' =>  Request::input('order_id')
+        ];
+        $rule = [
+            'order_id' => 'required'
+        ];
+        $this->validation($param, $rule);
+
+        //获取成功支付的订单信息
+        $order = $this->userShareService->getOrderInfo($param);
+
+        if(!$order){
+            return $this->fail('103','no order info');
+        }
+
+        $user_open_ids[] = $order['open_id'];
+        $returnData['bind_status'] = 0;
+        if($order['share_open_id']) {
+            $returnData['bind_status'] = 1;
+            $user_open_ids[] = $order['share_open_id'];
+        }
+        // 获取用户信息
+        $user_info_list = $this->weixinApp->user->batchGet($user_open_ids)->toArray();
+        $users = $user_info_list['user_info_list'];
+
+        $returnData['user_name'] = empty($order['user_name']) ? $users[0]['nickname'] : $order['user_name'];
+        $returnData['headimgurl'] = $users[0]['headimgurl'];
+
+        $returnData['share_user'] = "";
+        $returnData['share_headimgurl'] = "";
+        if($returnData['bind_status']){
+            $returnData['share_user'] = empty($order['share_user']) ? $users[1]['nickname'] : $order['share_user'];
+            $returnData['share_headimgurl'] = $users[1]['headimgurl'];
+        }
+
+        return $this->success($returnData);
     }
 
     // 用户下单购买
@@ -64,7 +114,7 @@ class UserShareController extends Controller
             'body'         => '你请客，我付钱活动',
             'detail'       => '你请客，我付钱活动',
             'out_trade_no' => $order_id,
-            'total_fee'    => 100, // 单位：分
+            'total_fee'    => 10, // 单位：分
             'notify_url'   => config('app.url') . '/userShare/pay_callback', // 支付结果通知网址，如果不设置则会使用配置里的默认地址
             'openid'       => $user['id'], // trade_type=JSAPI，此参数必传，用户在商户appid下的唯一标识
         ];
@@ -90,7 +140,7 @@ class UserShareController extends Controller
     {
         $response = $this->weixinApp->payment->handleNotify(function($notify, $successful){
             // 使用通知里的 "微信支付订单号" 或者 "商户订单号" 去自己的数据库找到订单
-            $order = $this->userShareService->getOrderInfo($notify->out_trade_no);
+            $order = $this->userShareService->getOrderInfo(['order_id' => $notify->out_trade_no]);
             if (empty($order)) { // 如果订单不存在
                 return 'Order not exist.'; // 告诉微信，我已经处理完了，订单没找到，别再通知我了
             }
@@ -114,61 +164,60 @@ class UserShareController extends Controller
     // 拓客活动1 被邀请人进入邀请页面
     public function getUserShare()
     {
+        //查询 订单信息
+        $param = [
+            'order_id' =>  Request::input('order_id')
+        ];
+        $rule = [
+            'order_id' => 'required'
+        ];
+        $message = [
+            'order_id.required' => "该页面不存在！"
+        ];
+        $this->validation($param, $rule, $message);
+
         //获取openID
+        $user = Request::session()->get('wechat_user');
+        if(empty($user)){
+            Request::session()->put('target_url','/activity/getUserShare?order_id=' . $param['order_id']);
+            return $this->weixinApp->oauth->redirect();
+        }
 
-
-        //根据订单ID，查询是否绑定状态
-
-
-
-
-
-
-
+        //获取成功支付的订单信息
+        $order = $this->userShareService->getOrderInfo($param);
+        if(!$order){
+            return redirect(config('app.url') . '/userShare/dist/index.html#/index');
+        }
+        // 获取好友信息
+        return redirect(config('app.url') . '/userShare/dist/index.html#/getShare?order_id=' . $order['order_id']);
     }
-
-
-
-
-
 
     // 被分享用户领取服务项目
-    public function shareItems()
+    public function getItems()
     {
+        //查询 订单信息
+        $param = [
+            'order_id'   =>  Request::input('order_id'),
+            'share_user' => Request::input('share_name'),
+            'share_phone_no' => Request::input('share_phone_no'),
+        ];
+        $rule = [
+            'order_id' => 'required',
+            'share_phone_no' => 'required',
+        ];
+        $message = [
+            'order_id.required' => "缺少领取凭证",
+            'share_phone_no.required' => "请输入手机号码！"
+        ];
+        $this->validation($param, $rule, $message);
+        //检查凭证是否有效
 
+
+        if($t) {
+
+        }
 
     }
-
-
-
-
-
-
-
-//    // 验证手机号码发送手机验证码
-//    public function validatePhoneNo()
-//    {
-//        $param = [
-//            'phone_no'   => Request::input('phone_no'),
-//            'session_id' => Request::session()->getId(),
-//        ];
-//
-//        $rule = [
-//            'phone_no' => ['required', 'regex:/^1[0-9]\d{9}$/']
-//        ];
-//
-//        $message = [
-//            'phone_no.required' => "请填写手机号",
-//            'phone_no.regex'    => "手机号不正确"
-//        ];
-//
-//        $this->validation($param, $rule, $message);
-//
-//        $data = $this->account->validateAccount($param);
-//        if (isset($data['statusCode'])) return $data;
-//
-//        return $this->success();
-//    }
 
 
 

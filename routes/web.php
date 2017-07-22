@@ -27,3 +27,5 @@ Route::get('/activity/getUserShare', 'UserShareController@getUserShare');
 //
 Route::post('/activity/buyItem', 'UserShareController@buyItem');
 Route::post('/userShare/pay_callback', 'UserShareController@payCallback'); //支付授权回调
+
+Route::post('/userShare/getOrderInfo', 'UserShareController@getOrderInfo'); //获取订单信息

@@ -41,7 +41,8 @@
 </template>
 
 <script>
-    import { buyItem } from '../api/api'
+    import wx from 'weixin-js-sdk'
+    import { buyItem, jsSdkData } from '../api/api'
     export default {
         name: 'Index',
 
@@ -56,10 +57,54 @@
                 }
             }
         },
+        created() {
+            this.wxConfig()
+        },
         methods: {
             closeDialog() {
                 this.dialogContent = ""
                 this.dialogShow = false
+            },
+            wxConfig (){
+                jsSdkData({ url: location.href.split('#')[0] }).then((response) => {
+                    wx.config(response)
+                    wx.ready(()=>{
+                        wx.onMenuShareTimeline({
+                            title: '你请客，我买单，走进德理堂寻觅健康美',
+                            link: 'http://dm-weixin.tanggaolin.com/activity/userShare', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                            imgUrl: 'https://mmbiz.qpic.cn/mmbiz_jpg/4ta2hGQS1TJODnIXtpuPiblQUwNAxbQdBU49sQ4aU7ibVlutsmqLrIvOahQwS2BxBHAq6DibqHXrpNdreMpzz4lIw/640', // 分享图标
+                            success: function () {
+                                // 用户确认分享后执行的回调函数
+                            },
+                            cancel: function () {
+                                // 用户取消分享后执行的回调函数
+                            }
+                        })
+                        wx.onMenuShareAppMessage({
+                            title: '你请客，我买单', // 分享标题
+                            desc: '走进德理堂，寻觅健康美', // 分享描述
+                            link: 'http://dm-weixin.tanggaolin.com/activity/userShare', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                            imgUrl: 'https://mmbiz.qpic.cn/mmbiz_jpg/4ta2hGQS1TJODnIXtpuPiblQUwNAxbQdBU49sQ4aU7ibVlutsmqLrIvOahQwS2BxBHAq6DibqHXrpNdreMpzz4lIw/640', // 分享图标
+                            type: 'link', // 分享类型,music、video或link，不填默认为link
+                            dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+                            success: function () {
+                                // 用户确认分享后执行的回调函数
+                            },
+                            cancel: function () {
+                                // 用户取消分享后执行的回调函数
+                            }
+                        })
+                    })
+                    wx.error(function(res){
+                        console.log('wx err',res)
+                        //可以更新签名
+                    })
+
+
+
+                }).catch((error) => {
+                    console.log(error)
+                })
             },
             buyItem() {
                 // 手机验证
@@ -69,7 +114,6 @@
                     return
                 }
 
-                let prepay_id = ""
                 buyItem(this.user).then((response) => {
                     if(0 !== response.statusCode) {
                         this.dialogContent = response.msg
@@ -87,8 +131,8 @@
                             WeixinJSBridge.invoke(
                                 'getBrandWCPayRequest', response.data,
                                 function(res){
-                                    if(res.err_msg == "get_brand_wcpay_request:ok" ) {
-                                        this.$route.push('/share')
+                                    if(res.err_msg === "get_brand_wcpay_request:ok" ) {
+                                        this.$router.push('/share')
                                     }     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。
                                 }
                             );

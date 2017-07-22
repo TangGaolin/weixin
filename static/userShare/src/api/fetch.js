@@ -10,7 +10,6 @@ export function fetch(options) {
     instance(options)
         .then(response => {
             const res = response.data
-            console.log(res.statusCode)
             resolve(res)
         })
         .catch(error => {
