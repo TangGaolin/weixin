@@ -22,29 +22,34 @@ class UserShareController extends Controller
         $this->userShareService = $userShareService;
     }
 
-
-
+    //page index ---------------------      活动首界面
     public function userShare()
     {
         //获取openID
         $user = Request::session()->get('wechat_user');
         if(empty($user)){
-            Request::session()->put('target_url','/activity/userShare');
+            Request::session()->put('target_url', '/activity/userShare');
             return $this->weixinApp->oauth->redirect();
         }
-
+        return redirect(config('app.url') . '/userShare/dist/index.html#/index');
+    }
+    //获取 用户状态
+    public function getUserStatus()
+    {
+        $user = Request::session()->get('wechat_user');
         //获取成功支付的订单信息
         $order = $this->userShareService->getOrderInfo([
             'open_id' => $user['id'],
             'status'  => 1,
         ]);
-
-        if($order){
-            return redirect(config('app.url') . '/userShare/dist/index.html#/share?order_id=' . $order['order_id']);
+        $data['order_id'] = "";
+        if($order) {
+            $data['order_id'] = $order['order_id'];
         }
-        return redirect(config('app.url') . '/userShare/dist/index.html#/index');
+        return $this->success($data);
     }
 
+    // 获取订单信息
     public function getOrderInfo()
     {
 
@@ -161,7 +166,7 @@ class UserShareController extends Controller
         return $response;
     }
 
-    // 拓客活动1 被邀请人进入邀请页面
+    //page share  ---------------- 被邀请人进入邀请页面
     public function getUserShare()
     {
         //查询 订单信息
@@ -182,14 +187,7 @@ class UserShareController extends Controller
             Request::session()->put('target_url','/activity/getUserShare?order_id=' . $param['order_id']);
             return $this->weixinApp->oauth->redirect();
         }
-
-        //获取成功支付的订单信息
-        $order = $this->userShareService->getOrderInfo($param);
-        if(!$order){
-            return redirect(config('app.url') . '/userShare/dist/index.html#/index');
-        }
-        // 获取好友信息
-        return redirect(config('app.url') . '/userShare/dist/index.html#/getShare?order_id=' . $order['order_id']);
+        return redirect(config('app.url') . '/userShare/dist/index.html#/getShare?order_id=' . $param['order_id']);
     }
 
     // 被分享用户领取服务项目
@@ -197,9 +195,9 @@ class UserShareController extends Controller
     {
         //查询 订单信息
         $param = [
-            'order_id'   =>  Request::input('order_id'),
-            'share_user' => Request::input('share_name'),
-            'share_phone_no' => Request::input('share_phone_no'),
+            'order_id'   => Request::input('order_id'),
+            'share_user' => Request::input('share_user'),
+            'share_phone_no' => Request::input('share_phone_no')
         ];
         $rule = [
             'order_id' => 'required',
@@ -210,13 +208,25 @@ class UserShareController extends Controller
             'share_phone_no.required' => "请输入手机号码！"
         ];
         $this->validation($param, $rule, $message);
+
+        $user = Request::session()->get('wechat_user');
+
         //检查凭证是否有效
-
-
-        if($t) {
-
+        $order = $this->userShareService->getOrderInfo(['order_id' => $param['order_id']]);
+        if($order['share_open_id']) {
+            return $this->fail(104,"该邀请已经被绑定，来了解下活动详情吧");
         }
 
+        //开始绑定
+        $updateData = [
+            'share_user'     => $param['share_user'],
+            'share_phone_no' => $param['phone_no'],
+            'share_open_id'  => $user['share_open_id']
+        ];
+        $this->userShareService->updateOrder(['order_id' => $param['order_id']], $updateData);
+
+        //发送消息通知
+        return $this->success();
     }
 
 

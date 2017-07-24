@@ -82,7 +82,7 @@ class IndexController extends Controller
             // 使用通知里的 "微信支付订单号" 或者 "商户订单号" 去自己的数据库找到订单
 //            $order = $this->getOrder($notify->out_trade_no);
 //            if (!$order) { // 如果订单不存在
-//                return 'Order not exist.'; // 告诉微信，我已经处理完了，订单没找到，别再通知我了
+//                return 'Order not exist.'; //告诉微信，我已经处理完了，订单没找到，别再通知我了
 //            }
 //            // 如果订单存在
 //            // 检查订单是否已经更新过支付状态
