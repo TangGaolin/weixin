@@ -29,7 +29,7 @@ module.exports = {
     assetsPublicPath: '',
     proxyTable: {
         '/api': {
-            target: 'http://weixin.localdev.com',
+            target: 'http://dm-weixin.tanggaolin.com',
             changeOrigin: true,
             logLevel: 'debug',
             pathRewrite: {

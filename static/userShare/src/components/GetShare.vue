@@ -1,16 +1,16 @@
 <template>
     <div class="hello">
         <article class="weui-article">
-            <h1>你请客，我买单</h1>
+            <h1>你好友请你寻觅的健康美</h1>
             <section>
-                <h2 class="title">走进德理堂，寻觅健康美</h2>
+                <h2 class="title"></h2>
                 <section>
                     <div class="weui-btn-area">
                         <img :src="orderDetail.headimgurl"/>
                     </div>
 
                     <div class="weui-btn-area" v-if = "1 == orderDetail.bind_status">
-                        <img :src="orderDetail.headimgurl"/>
+                        <img :src="orderDetail.share_headimgurl"/>
                     </div>
                 </section>
 
@@ -59,45 +59,7 @@
                 })
             },
             wxConfig (){
-                jsSdkData({ url: location.href.split('#')[0] }).then((response) => {
-                    wx.config(response)
-                    wx.ready(()=>{
-                        wx.onMenuShareTimeline({
-                            title: '你请客，我付钱，走进德理堂，寻觅健康美',
-                            link: 'http://dm-weixin.tanggaolin.com/activity/getUserShare?order_id=' + this.$route.query.order_id, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-                            imgUrl: '', // 分享图标
-                            success: function () {
-                                // 用户确认分享后执行的回调函数
-                            },
-                            cancel: function () {
-                                // 用户取消分享后执行的回调函数
-                            }
-                        })
-                        wx.onMenuShareAppMessage({
-                            title: '你请客，我付钱', // 分享标题
-                            desc: '走进德理堂，寻觅健康美', // 分享描述
-                            link: 'http://dm-weixin.tanggaolin.com/activity/getUserShare?order_id=' + this.$route.query.order_id, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-                            imgUrl: '', // 分享图标
-                            type: 'link', // 分享类型,music、video或link，不填默认为link
-                            dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
-                            success: function () {
-                                // 用户确认分享后执行的回调函数
-                            },
-                            cancel: function () {
-                                // 用户取消分享后执行的回调函数
-                            }
-                        })
-                    })
-                    wx.error(function(res){
-                        console.log('wx err',res)
-                        //可以更新签名
-                    })
 
-
-
-                }).catch((error) => {
-                    console.log(error)
-                })
             },
         }
     }

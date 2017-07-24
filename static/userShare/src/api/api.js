@@ -1,10 +1,18 @@
 import { fetch } from './fetch';
 
-
 export function buyItem(params) {
     const data = params
     return fetch({
-        url:  process.env.API_ROOT + '/activity/buyItem',
+        url:  process.env.API_ROOT + '/userShare/buyItem',
+        method: 'post',
+        data
+    });
+}
+
+export function getUserStatus(params) {
+    const data = params
+    return fetch({
+        url:  process.env.API_ROOT + '/userShare/getUserStatus',
         method: 'post',
         data
     });

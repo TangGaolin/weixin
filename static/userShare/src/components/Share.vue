@@ -10,7 +10,7 @@
                     </div>
 
                     <div class="weui-btn-area" v-if = "1 == orderDetail.bind_status">
-                        <img :src="orderDetail.headimgurl"/>
+                        <img :src="orderDetail.share_headimgurl"/>
                     </div>
                 </section>
 
@@ -28,9 +28,9 @@
 <script>
 
     import wx from 'weixin-js-sdk'
-    import { jsSdkData,getOrderInfo } from '../api/api'
+    import { jsSdkData, getOrderInfo } from '../api/api'
     export default {
-        name: 'hello',
+        name: 'share',
         data () {
             return {
                 dialogShow: false,
@@ -59,45 +59,33 @@
                 })
             },
             wxConfig (){
-                jsSdkData({ url: location.href.split('#')[0] }).then((response) => {
+                this.order_id = this.$route.query.order_id
+                jsSdkData({
+                    url: location.href.split('#')[0],
+                    functions:['onMenuShareAppMessage','hideMenuItems']
+                }).then((response) => {
                     wx.config(response)
-                    wx.ready(()=>{
-                        wx.onMenuShareTimeline({
-                            title: '你请客，我付钱，走进德理堂，寻觅健康美',
-                            link: 'http://dm-weixin.tanggaolin.com/activity/getUserShare?order_id=' + this.$route.query.order_id, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-                            imgUrl: '', // 分享图标
-                            success: function () {
-                                // 用户确认分享后执行的回调函数
-                            },
-                            cancel: function () {
-                                // 用户取消分享后执行的回调函数
-                            }
-                        })
+                    wx.ready(() => {
+                        wx.hideMenuItems({
+                            menuList: [
+                                "menuItem:share:timeline",
+                                "menuItem:share:qq",
+                                "menuItem:share:weiboApp",
+                                "menuItem:favorite",
+                                "menuItem:share:QZone"
+                            ] // 要隐藏的菜单项
+                        });
                         wx.onMenuShareAppMessage({
                             title: '你请客，我付钱', // 分享标题
                             desc: '走进德理堂，寻觅健康美', // 分享描述
-                            link: 'http://dm-weixin.tanggaolin.com/activity/getUserShare?order_id=' + this.$route.query.order_id, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-                            imgUrl: '', // 分享图标
+                            link: 'http://dm-weixin.tanggaolin.com/activity/getUserShare?order_id=' + this.order_id, //
+                            imgUrl: 'https://mmbiz.qpic.cn/mmbiz_jpg/4ta2hGQS1TJODnIXtpuPiblQUwNAxbQdBU49sQ4aU7ibVlutsmqLrIvOahQwS2BxBHAq6DibqHXrpNdreMpzz4lIw/640', // 分享图标
                             type: 'link', // 分享类型,music、video或link，不填默认为link
                             dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
-                            success: function () {
-                                // 用户确认分享后执行的回调函数
-                            },
-                            cancel: function () {
-                                // 用户取消分享后执行的回调函数
-                            }
                         })
                     })
-                    wx.error(function(res){
-                        console.log('wx err',res)
-                        //可以更新签名
-                    })
-
-
-
-                }).catch((error) => {
-                    console.log(error)
                 })
+
             },
         }
     }
