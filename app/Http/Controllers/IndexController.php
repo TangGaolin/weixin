@@ -68,10 +68,11 @@ class IndexController extends Controller
     public function jsSdkData()
     {
         $url = Request::input('url',"");
+        $functions = Request::input('functions', ['onMenuShareTimeline, onMenuShareAppMessage']);
         if($url){
             $this->weixinApp->js->setUrl($url);
         }
-        return $this->weixinApp->js->config(['onMenuShareTimeline, onMenuShareAppMessage'], config('app.debug'), false, false);
+        return $this->weixinApp->js->config($functions, config('app.debug'), false, false);
     }
 
     //支付成功回调
