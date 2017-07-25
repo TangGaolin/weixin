@@ -1,10 +1,36 @@
+<style scoped>
+    .title {
+        text-align: center;
+    }
+</style>
 <template>
     <div class="hello">
         <article class="weui-article">
-            <h1>你请客，我买单</h1>
+            <p>
+                <img src="../assets/header.jpg" alt="">
+            </p>
             <section>
-                <h2 class="title">走进德理堂，寻觅健康美</h2>
+                <h1 class="title">活动项目</h1>
+                <section>
+                    <h3>项目1-扶阳罐</h3>
+                    <p>
+                        市场客单价: <s> 398 元</s>
+                        <img src="../assets/item123.jpg" alt="">
+                        扶阳罐以“温刮温灸亚健康调理技术”为核心，传承了中医经典养生文化，展示了我国数千年的中医养生之道，首次成功实现热能、红外线、磁疗的同步导入，真正做到排毒祛瘀、驱寒祛湿，有效宣通瘀结的经络、温补虚损的阳气
+                    </p>
+                </section>
 
+            </section>
+            <section>
+                <h1 class="title">活动规则</h1>
+                <section style="color: red">
+                    <p>1. 填写姓名和手机号，支付198元 </p>
+                    <p>2. 支付成功即可体验以上任意一种项目</p>
+                    <p>3. 获得赠与好友免费一次体验名额</p>
+                </section>
+
+            </section>
+            <section>
                 <section>
                     <div class="weui-cells weui-cells_form">
                         <div class="weui-cell">
@@ -106,7 +132,7 @@
                                 function(res){
                                     if(res.err_msg === "get_brand_wcpay_request:ok" ) {
                                         location.reload()
-                                    }     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。
+                                    }
                                 }
                             );
                         }
@@ -120,6 +146,4 @@
     }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-</style>
+

@@ -76,7 +76,7 @@
                             ] // 要隐藏的菜单项
                         });
                         wx.onMenuShareAppMessage({
-                            title: '你请客，我付钱', // 分享标题
+                            title: '赠送', // 分享标题
                             desc: '走进德理堂，寻觅健康美', // 分享描述
                             link: 'http://dm-weixin.tanggaolin.com/activity/getUserShare?order_id=' + this.order_id, //
                             imgUrl: 'https://mmbiz.qpic.cn/mmbiz_jpg/4ta2hGQS1TJODnIXtpuPiblQUwNAxbQdBU49sQ4aU7ibVlutsmqLrIvOahQwS2BxBHAq6DibqHXrpNdreMpzz4lIw/640', // 分享图标

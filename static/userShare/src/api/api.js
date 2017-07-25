@@ -27,6 +27,15 @@ export function getOrderInfo(params) {
     });
 }
 
+export function getItems(params) {
+    const data = params
+    return fetch({
+        url:  process.env.API_ROOT + '/userShare/getItems',
+        method: 'post',
+        data
+    });
+}
+
 export function jsSdkData(params) {
     const data = params
     return fetch({

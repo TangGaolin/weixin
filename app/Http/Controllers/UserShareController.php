@@ -77,6 +77,7 @@ class UserShareController extends Controller
         // 获取用户信息
         $user_info_list = $this->weixinApp->user->batchGet($user_open_ids)->toArray();
         $users = $user_info_list['user_info_list'];
+        dd($users);
 
         $returnData['user_name'] = empty($order['user_name']) ? $users[0]['nickname'] : $order['user_name'];
         $returnData['headimgurl'] = $users[0]['headimgurl'];
@@ -85,7 +86,7 @@ class UserShareController extends Controller
         $returnData['share_headimgurl'] = "";
         if($returnData['bind_status']){
             $returnData['share_user'] = empty($order['share_user']) ? $users[1]['nickname'] : $order['share_user'];
-            $returnData['share_headimgurl'] = $users[1]['headimgurl'];
+            $returnData['share_headimgurl'] = $users[1]['headimgurl'] ?? "";
         }
 
         return $this->success($returnData);
@@ -119,7 +120,7 @@ class UserShareController extends Controller
             'body'         => '你请客，我付钱活动',
             'detail'       => '你请客，我付钱活动',
             'out_trade_no' => $order_id,
-            'total_fee'    => 10, // 单位：分
+            'total_fee'    => 600, // 单位：分
             'notify_url'   => config('app.url') . '/userShare/pay_callback', // 支付结果通知网址，如果不设置则会使用配置里的默认地址
             'openid'       => $user['id'], // trade_type=JSAPI，此参数必传，用户在商户appid下的唯一标识
         ];
@@ -158,9 +159,24 @@ class UserShareController extends Controller
             if ($successful) {
                 // 不是已经支付状态则修改为已经支付状态
                 $this->userShareService->updateOrder(['order_id' => $order['order_id']],['status' => 1]);
+                //发送购买成功通知
+                $userId = $order['open_id'];
+                $templateId = 'DjBJYIwT7qN1S1fOxmP6s0xoR4Lg4tSNgq3J6FWRUmY';
+                $url = config('app.url') . '/userShare/dist/index.html#/getShare?order_id=' . $order['order_id'];
+                $data = array(
+                    "first"    => "您好，您已经成功领取！",
+                    "keyword1" => "你请客，我付钱活动",
+                    "keyword2" => $order['user_name'] . ":" . $order['phone_no'],
+                    "keyword3" => "0.01元",
+                    "keyword4" => "无",
+                    "remark"   => "感谢您的参与",
+                );
+                //发送支付推送
+                $result = $this->weixinApp->notice->uses($templateId)->withUrl($url)->andData($data)->andReceiver($userId)->send();
             } else { // 用户支付失败
                 $this->userShareService->updateOrder(['order_id' => $order['order_id']],['status' => -1]);
             }
+
             return true; // 返回处理完成
         });
         return $response;
@@ -196,8 +212,8 @@ class UserShareController extends Controller
         //查询 订单信息
         $param = [
             'order_id'   => Request::input('order_id'),
-            'share_user' => Request::input('share_user'),
-            'share_phone_no' => Request::input('share_phone_no')
+            'share_user' => Request::input('user_name'),
+            'share_phone_no' => Request::input('phone_no')
         ];
         $rule = [
             'order_id' => 'required',
@@ -217,15 +233,32 @@ class UserShareController extends Controller
             return $this->fail(104,"该邀请已经被绑定，来了解下活动详情吧");
         }
 
+        if($user['id'] == $order['open_id']){
+            return $this->fail(105,"本活动规则是要邀请您的好友领取哦！");
+        }
+
         //开始绑定
         $updateData = [
             'share_user'     => $param['share_user'],
-            'share_phone_no' => $param['phone_no'],
-            'share_open_id'  => $user['share_open_id']
+            'share_phone_no' => $param['share_phone_no'],
+            'share_open_id'  => $user['id']
         ];
         $this->userShareService->updateOrder(['order_id' => $param['order_id']], $updateData);
 
         //发送消息通知
+        $userId = $user['id'];
+        $templateId = 'DjBJYIwT7qN1S1fOxmP6s0xoR4Lg4tSNgq3J6FWRUmY';
+        $url = config('app.url') . '/userShare/dist/index.html#/getShare?order_id=' . $param['order_id'];
+        $data = array(
+            "first"    => "您好，您已经成功领取！",
+            "keyword1" => "你请客，我付钱活动",
+            "keyword2" => $param['share_user'] . ":" . $param['share_phone_no'],
+            "keyword3" => "0 元",
+            "keyword4" => "无",
+            "remark"   => "感谢您的参与",
+        );
+        // 发送支付推送
+        $result = $this->weixinApp->notice->uses($templateId)->withUrl($url)->andData($data)->andReceiver($userId)->send();
         return $this->success();
     }
 
