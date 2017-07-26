@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Index from '@/components/Index'
-import Share from '@/components/Share'
-import getShare from '@/components/getShare'
+import Index from '../pages/Index'
+import Share from '../pages/Share'
+import getShare from '../pages/getShare'
 
 Vue.use(Router)
 
