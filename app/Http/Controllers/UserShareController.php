@@ -97,6 +97,7 @@ class UserShareController extends Controller
             'join_status' => 1
         ];
         $this->userShareService->buyItem($order_data);
+        return $this->success();
     }
 
     // 用户下单购买
