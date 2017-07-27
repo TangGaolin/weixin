@@ -85,15 +85,9 @@
         border: none;
         font-weight: 500;
         border-radius: 5px;
-        padding: .8rem .8rem;
+        padding: .6rem .6rem;
         margin-top: .5rem;
         width: 100%;
-    }
-    input:focus {
-        outline: none;
-    }
-    button:focus {
-        outline:none;
     }
     .toast {
         position:fixed;
@@ -126,7 +120,8 @@
                     </li>
 
                     <li>
-                        <button class="btn submit" v-on:click="buyItem">提交支付</button>
+                        <button class="btn submit" v-on:click="buyItem(1)"> 提交支付 </button>
+                        <button class="btn submit" style="background: green" v-on:click="buyItem(0)"> 到店体验 </button>
                     </li>
                 </ul>
             </li>
@@ -143,7 +138,7 @@
 
 <script>
     import wx from 'weixin-js-sdk'
-    import { buyItem, jsSdkData, getUserStatus } from '../api/api'
+    import { buyItem, jsSdkData, getUserStatus, joinAct } from '../api/api'
     export default {
         name: 'Index',
 
@@ -157,26 +152,8 @@
                 }
             }
         },
-        created() {
-            this.checkUserStatus()
-            this.wxConfig()
-        },
         methods: {
-            checkUserStatus(){
-                getUserStatus().then((response) => {
-                    //判断用户是否购买
-                    console.log(response.data.order_id)
-                    if("" !== response.data.order_id){
-                        this.$router.push('/share?order_id=' + response.data.order_id)
-                    }
-                }).catch((error) => {
-                    console.log(error)
-                })
-            },
-            wxConfig (){
-
-            },
-            buyItem() {
+            buyItem(type) {
                 // 姓名验证！
                 if (!this.user.user_name){
                     this.toast("请输入姓名！")
@@ -187,32 +164,63 @@
                     this.toast("要求输入正确的手机号码！")
                     return
                 }
-                buyItem(this.user).then((response) => {
-                    if(0 !== response.statusCode) {
-                        this.dialogContent = response.msg
-                        this.dialogShow = true
-                    }else{
-                        if (typeof WeixinJSBridge === "undefined"){
-                            if( document.addEventListener ){
-                                document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
-                            }else if (document.attachEvent){
-                                document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
-                                document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
-                            }
+
+                if(1 === type){
+                    buyItem(this.user).then((response) => {
+                        if(0 !== response.statusCode) {
+                            this.dialogContent = response.msg
+                            this.dialogShow = true
                         }else{
-                            WeixinJSBridge.invoke(
-                                'getBrandWCPayRequest', response.data,
-                                function(res){
-                                    if(res.err_msg === "get_brand_wcpay_request:ok" ) {
-                                        location.reload()
-                                    }
+                            if (typeof WeixinJSBridge === "undefined"){
+                                if( document.addEventListener ){
+                                    document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+                                }else if (document.attachEvent){
+                                    document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+                                    document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
                                 }
-                            );
+                            }else{
+                                WeixinJSBridge.invoke(
+                                    'getBrandWCPayRequest', response.data,
+                                    function(res){
+                                        if(res.err_msg === "get_brand_wcpay_request:ok" ) {
+                                            location.reload()
+                                        }
+                                    }
+                                );
+                            }
                         }
-                    }
-                }).catch((error) => {
-                    console.log(error)
-                })
+                    }).catch((error) => {
+                        console.log(error)
+                    })
+                }else{
+                    joinAct(this.user).then((response) => {
+                        if(0 !== response.statusCode) {
+                            this.dialogContent = response.msg
+                            this.dialogShow = true
+                        }else{
+                            if (typeof WeixinJSBridge === "undefined"){
+                                if( document.addEventListener ){
+                                    document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+                                }else if (document.attachEvent){
+                                    document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+                                    document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+                                }
+                            }else{
+                                WeixinJSBridge.invoke(
+                                    'getBrandWCPayRequest', response.data,
+                                    function(res){
+                                        if(res.err_msg === "get_brand_wcpay_request:ok" ) {
+                                            location.reload()
+                                        }
+                                    }
+                                );
+                            }
+                        }
+                    }).catch((error) => {
+                        console.log(error)
+                    })
+                }
+
             },
             toast(c){
                 var _this = this

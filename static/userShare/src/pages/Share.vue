@@ -1,27 +1,30 @@
+<style>
+    .share-hand {
+        width: 40%;
+        position: absolute;
+        top: 2%;
+        right: 10%;
+    }
+    .pop-container {
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        left: 0;
+        background: rgba(0, 0, 0, .7);
+    }
+</style>
 <template>
-    <div class="hello">
-        <article class="weui-article">
-            <h1>你请客，我买单</h1>
-            <section>
-                <h2 class="title">走进德理堂，寻觅健康美</h2>
-                <section>
-                    <div class="weui-btn-area">
-                        <img :src="orderDetail.headimgurl"/>
-                    </div>
-
-                    <div class="weui-btn-area" v-if = "1 == orderDetail.bind_status">
-                        <img :src="orderDetail.share_headimgurl"/>
-                    </div>
-                </section>
-
-                <section>
-                    <div class="weui-btn-area" v-if = "0 == orderDetail.bind_status">
-                        <button class="weui-btn weui-btn_primary" id="showTooltips" v-on:click="sharePage">分享给你要请客的好友</button>
-                    </div>
-                </section>
-            </section>
-        </article>
-
+    <div class="share">
+        <HeaderShow></HeaderShow>
+        <JoinInfo :orderDetail = orderDetail
+                  v-on:showMask = "showMask">
+        </JoinInfo>
+        <ActDesc></ActDesc>
+        <itemIntro></itemIntro>
+        <div class="pop-container" v-if="isMaskShow" v-on:click = "isMaskShow = false">
+            <img src="../assets/share-hand.png" alt="" class="share-hand">
+        </div>
     </div>
 </template>
 
@@ -33,6 +36,7 @@
         name: 'share',
         data () {
             return {
+                isMaskShow: false,
                 dialogShow: false,
                 dialogTitle: "",
                 dialogContent: "",
@@ -57,6 +61,10 @@
                 }).catch((error) => {
                     console.log(error)
                 })
+            },
+
+            showMask() {
+                this.isMaskShow = true
             },
             wxConfig (){
                 this.order_id = this.$route.query.order_id

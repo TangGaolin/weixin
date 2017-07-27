@@ -62,5 +62,12 @@
         font-size: small;
     }
 
+    input:focus {
+        outline: none;
+    }
+    button:focus {
+        outline:none;
+    }
+
 
 </style>

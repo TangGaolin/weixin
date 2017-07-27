@@ -44,3 +44,12 @@ export function jsSdkData(params) {
         data
     });
 }
+
+export function joinAct(params) {
+    const data = params
+    return fetch({
+        url:  process.env.API_ROOT + '/userShare/joinAct',
+        method: 'post',
+        data
+    });
+}
