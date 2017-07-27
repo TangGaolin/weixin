@@ -64,9 +64,10 @@ class UserShareController extends Controller
         $order = $this->userShareService->getOrderInfo($param);
 
         if(!$order){
-            return $this->fail('103','no order info');
+            return $this->fail('103','no order');
         }
-
+        unset($order['open_id']);
+        unset($order['share_open_id']);
         return $this->success($order);
     }
 
@@ -128,7 +129,7 @@ class UserShareController extends Controller
             'body'         => '你请客，我买单活动',
             'detail'       => '你请客，我买单活动',
             'out_trade_no' => $order_id,
-            'total_fee'    => 600, // 单位：分
+            'total_fee'    => config('userShare.price'), // 单位：分
             'notify_url'   => config('app.url') . '/userShare/pay_callback', // 支付结果通知网址，如果不设置则会使用配置里的默认地址
             'openid'       => $user['id'], // trade_type=JSAPI，此参数必传，用户在商户appid下的唯一标识
         ];
@@ -178,7 +179,7 @@ class UserShareController extends Controller
                     "first"    => "您好，您已经成功领取！",
                     "keyword1" => "你请客，我付钱活动",
                     "keyword2" => $order['user_name'] . ":" . $order['phone_no'],
-                    "keyword3" => "0.01元",
+                    "keyword3" => config('userShare.price') / 100 . " 元",
                     "keyword4" => "无",
                     "remark"   => "感谢您的参与",
                 );
