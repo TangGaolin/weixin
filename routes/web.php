@@ -27,6 +27,7 @@ Route::get('/activity/getUserShare', 'UserShareController@getUserShare'); //分�
 
 Route::post('/userShare/getUserStatus', 'UserShareController@getUserStatus');  // 获取用户状态
 Route::post('/userShare/buyItem', 'UserShareController@buyItem');  // 购买接口
+Route::post('/userShare/joinAct', 'UserShareController@joinAct');  // 参与活动接口
 Route::post('/userShare/getItems', 'UserShareController@getItems');  // 用户领取接口
 Route::post('/userShare/pay_callback', 'UserShareController@payCallback'); // 支付授权回调
 Route::post('/userShare/getOrderInfo', 'UserShareController@getOrderInfo'); // 获取订单信息

@@ -40,7 +40,7 @@ class UserShareController extends Controller
         //获取成功支付的订单信息
         $order = $this->userShareService->getOrderInfo([
             'open_id' => $user['id'],
-            'status'  => 1,
+            'join_status' => 1,
         ]);
         $data['order_id'] = "";
         if($order) {
@@ -52,7 +52,6 @@ class UserShareController extends Controller
     // 获取订单信息
     public function getOrderInfo()
     {
-
         $param = [
             'order_id' =>  Request::input('order_id')
         ];
@@ -68,28 +67,35 @@ class UserShareController extends Controller
             return $this->fail('103','no order info');
         }
 
-        $user_open_ids[] = $order['open_id'];
-        $returnData['bind_status'] = 0;
-        if($order['share_open_id']) {
-            $returnData['bind_status'] = 1;
-            $user_open_ids[] = $order['share_open_id'];
-        }
-        // 获取用户信息
-        $user_info_list = $this->weixinApp->user->batchGet($user_open_ids)->toArray();
-        $users = $user_info_list['user_info_list'];
-        dd($users);
+        return $this->success($order);
+    }
 
-        $returnData['user_name'] = empty($order['user_name']) ? $users[0]['nickname'] : $order['user_name'];
-        $returnData['headimgurl'] = $users[0]['headimgurl'];
+    public function joinAct()
+    {
+        // 获取用户提交参数
+        $param = [
+            'phone_no'   => Request::input('phone_no'),
+            'user_name'  => Request::input('user_name', ""),
+        ];
+        $rule = [
+            'phone_no' => ['required', 'regex:/^1[0-9]\d{9}$/']
+        ];
+        $message = [
+            'phone_no.required' => "请填写手机号！",
+            'phone_no.regex'    => "手机号不正确"
+        ];
+        $this->validation($param, $rule, $message);
 
-        $returnData['share_user'] = "";
-        $returnData['share_headimgurl'] = "";
-        if($returnData['bind_status']){
-            $returnData['share_user'] = empty($order['share_user']) ? $users[1]['nickname'] : $order['share_user'];
-            $returnData['share_headimgurl'] = $users[1]['headimgurl'] ?? "";
-        }
-
-        return $this->success($returnData);
+        $order_id = date('YmdHis') . mt_rand(100, 999);
+        $user = Request::session()->get('wechat_user');
+        $order_data = [
+            'order_id'  => $order_id,
+            'open_id'   => $user['id'],
+            'user_name' => $param['user_name'],
+            'phone_no'  => $param['phone_no'],
+            'join_status' => 1
+        ];
+        $this->userShareService->buyItem($order_data);
     }
 
     // 用户下单购买
@@ -97,6 +103,7 @@ class UserShareController extends Controller
     {
         // 获取用户提交参数
         $param = [
+            'order_id'   => Request::input('order_id'),
             'phone_no'   => Request::input('phone_no'),
             'user_name'  => Request::input('user_name', ""),
         ];
@@ -114,11 +121,12 @@ class UserShareController extends Controller
            return $this->fail(102,"该页面已经失效，请退出重新载入");
         }
 
-        $order_id = date('YmdHis') . mt_rand(100, 999);
+        $order_id = $param['order_id'] ? $param['order_id'] : date('YmdHis') . mt_rand(100, 999);
+
         $attributes = [
             'trade_type'   => 'JSAPI', // JSAPI，NATIVE，APP ...
-            'body'         => '你请客，我付钱活动',
-            'detail'       => '你请客，我付钱活动',
+            'body'         => '你请客，我买单活动',
+            'detail'       => '你请客，我买单活动',
             'out_trade_no' => $order_id,
             'total_fee'    => 600, // 单位：分
             'notify_url'   => config('app.url') . '/userShare/pay_callback', // 支付结果通知网址，如果不设置则会使用配置里的默认地址
@@ -136,7 +144,10 @@ class UserShareController extends Controller
                 'user_name' => $param['user_name'],
                 'phone_no'  => $param['phone_no'],
             ];
-            $this->userShareService->buyItem($order_data);
+            if(!$param['order_id']){
+                //新订单就插入
+                $this->userShareService->buyItem($order_data);
+            }
             return $this->success($config);
         }
     }
@@ -158,7 +169,7 @@ class UserShareController extends Controller
             // 用户是否支付成功
             if ($successful) {
                 // 不是已经支付状态则修改为已经支付状态
-                $this->userShareService->updateOrder(['order_id' => $order['order_id']],['status' => 1]);
+                $this->userShareService->updateOrder(['order_id' => $order['order_id']],['status' => 1,'join_status' => 1]);
                 //发送购买成功通知
                 $userId = $order['open_id'];
                 $templateId = 'DjBJYIwT7qN1S1fOxmP6s0xoR4Lg4tSNgq3J6FWRUmY';
