@@ -258,20 +258,20 @@ class UserShareController extends Controller
         ];
         $this->userShareService->updateOrder(['order_id' => $param['order_id']], $updateData);
 
-        //发送消息通知
-        $userId = $user['id'];
-        $templateId = 'DjBJYIwT7qN1S1fOxmP6s0xoR4Lg4tSNgq3J6FWRUmY';
-        $url = config('app.url') . '/userShare/dist/index.html#/getShare?order_id=' . $param['order_id'];
-        $data = array(
-            "first"    => "您好，您已经成功领取！",
-            "keyword1" => "你请客，我付钱活动",
-            "keyword2" => $param['share_user'] . ":" . $param['share_phone_no'],
-            "keyword3" => "0 元",
-            "keyword4" => "无",
-            "remark"   => "感谢您的参与",
-        );
-        // 发送支付推送
-        $result = $this->weixinApp->notice->uses($templateId)->withUrl($url)->andData($data)->andReceiver($userId)->send();
+//        //发送消息通知
+//        $userId = $user['id'];
+//        $templateId = 'DjBJYIwT7qN1S1fOxmP6s0xoR4Lg4tSNgq3J6FWRUmY';
+//        $url = config('app.url') . '/userShare/dist/index.html#/getShare?order_id=' . $param['order_id'];
+//        $data = array(
+//            "first"    => "您好，您已经成功领取！",
+//            "keyword1" => "你请客，我付钱活动",
+//            "keyword2" => $param['share_user'] . ":" . $param['share_phone_no'],
+//            "keyword3" => "0 元",
+//            "keyword4" => "无",
+//            "remark"   => "感谢您的参与",
+//        );
+//        // 发送支付推送
+//        $result = $this->weixinApp->notice->uses($templateId)->withUrl($url)->andData($data)->andReceiver($userId)->send();
         return $this->success();
     }
 
