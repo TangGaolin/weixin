@@ -3,41 +3,21 @@
         padding: 0;
         list-style: none;
     }
-    .content {
-        padding: 0 5%;
-        margin-top: .4rem;
+    label {
+        font-weight: bolder;
     }
-    .content .content-item {
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 0 6px rgba(0, 93, 152,.5);
-        position: relative;
-        padding: 3rem 0 2.5rem;
-        margin-bottom: 2rem;
-    }
-    .content .content-title {
-        width: 10rem;
-        position: absolute;
-        top: -1rem;
-        left: 50%;
-        font-size: large;
-        margin-left: -5rem;
-        line-height: 2rem;
-        vertical-align: middle;
-        border:2px solid rgba(0, 93, 152, .5);
-        border-radius: 10px;
-        background: #fff;
-        box-shadow: 0 0 2px rgba(0, 93, 152,.5);
+    .btn {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        border-radius: 5px;
+        color: white;
+        padding: 5px 32px;
         text-align: center;
-        color: #2a88bd;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
     }
-    .content p{
-        padding: 0 6%;
-        font-weight: 200;
-        text-align: justify;
-        letter-spacing: .5px;
-        font-size: small;
-    }
+
     .form {
         padding: 2rem 1rem!important;
         font-size: 1.1rem;
@@ -61,7 +41,7 @@
     }
     .form .info-input {
         border: 1px solid #2a88bd;
-        padding: .8rem .2rem .8rem 2.5rem;
+        padding: .6rem .2rem .6rem 2.5rem;
         font-size: 1.1rem;
         line-height: 1.2rem;
         height: 1.2rem;
@@ -79,7 +59,7 @@
         background-size: 100% 100%;
     }
     .form .submit {
-        background: #e85d53;
+        background: #04be02;
         font-size: 1.0rem;
         color: #fff;
         border: none;
@@ -90,7 +70,6 @@
         width: 100%;
     }
 
-
 </style>
 <template>
 
@@ -98,9 +77,21 @@
         <section class="content">
             <li class="content-item form">
                 <label class = "content-title" style="color: red">
-                    <span>我要参与</span>
+                    <span>参与活动</span>
                 </label>
-                <ul class="input-container">
+
+                <p style="color: red;text-align: center;font-size: large">您的好友邀请您体验免费</p>
+                <p>&nbsp;</p>
+                <p>
+                    <label>邀请人：</label> {{ orderDetail.user_name }}
+                </p>
+
+                <p v-if = "!orderDetail.share_phone_no">
+                    <label>邀请状态：</label> {{  orderDetail.share_phone_no ? "分享成功": "未分享"}}
+                </p>
+                <p>&nbsp;</p>
+
+                <ul class="input-container" v-if="!orderDetail.share_phone_no">
                     <li class="input-item">
                         <span class="input-i user"></span>
                         <input class="info-input name" placeholder="姓名" v-model="user.user_name">
@@ -109,12 +100,16 @@
                         <span class="input-i phone"></span>
                         <input class="info-input phone-num" placeholder="手机号码"  v-model="user.phone_no"  maxlength="11">
                     </li>
-
                     <li>
-                        <button class="btn submit" v-on:click="buyItem(1)"> 提交支付 </button>
-                        <button class="btn submit" style="background: green" v-on:click="buyItem(0)"> 到店体验 </button>
+                        <button class="btn submit" v-on:click="getItem()"> 立即领取 </button>
                     </li>
                 </ul>
+
+                <p v-if = "orderDetail.status && orderDetail.share_phone_no">
+                    <br/>
+                    <label>被邀请人：</label> {{ orderDetail.share_user }}<br/>
+                    <label>手机号码：</label> {{ orderDetail.share_phone_no }}
+                </p>
             </li>
         </section>
 
@@ -123,78 +118,58 @@
                 <p>{{dialogContent}}</p>
             </div>
         </section>
+
+
     </div>
 
 </template>
 
 <script>
-    import wx from 'weixin-js-sdk'
-    import { buyItem, jsSdkData, getUserStatus, joinAct } from '../api/api'
+    import { getItems } from '../api/api'
     export default {
         name: 'Index',
+        props: {
+            orderDetail: Object
+        },
 
         data () {
             return {
+                user: {
+                    user_name: "",
+                    phone_no: "",
+                },
                 dialogShow: false,
                 dialogContent: "",
-                user: {
-                    user_name:"",
-                    phone_no:"",
-                }
             }
         },
+        created() {
+        },
         methods: {
-            buyItem(type) {
-                // 姓名验证！
-                if (!this.user.user_name){
-                    this.toast("请输入姓名！")
-                    return
-                }
+            getItem() {
                 // 手机验证
-                if (!this.user.phone_no || !this.user.phone_no.match(/1\d{10}/)){
-                    this.toast("要求输入正确的手机号码！")
+                if (!this.user.user_name){
+                    this.toast('请输入姓名')
                     return
                 }
-
-                // 判断是参与还是购买
-                if(1 === type){
-                    buyItem(this.user).then((response) => {
-                        if(0 !== response.statusCode) {
-                            this.toast(response.msg)
-                        }else{
-                            if (typeof WeixinJSBridge === "undefined"){
-                                if( document.addEventListener ){
-                                    document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
-                                }else if (document.attachEvent){
-                                    document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
-                                    document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
-                                }
-                            }else{
-                                WeixinJSBridge.invoke(
-                                    'getBrandWCPayRequest', response.data,
-                                    function(res){
-                                        if(res.err_msg === "get_brand_wcpay_request:ok" ) {
-                                            location.reload()
-                                        }
-                                    }
-                                );
-                            }
-                        }
-                    }).catch((error) => {
-                        console.log(error)
-                    })
-                }else{
-                    joinAct(this.user).then((response) => {
-                        if(0 !== response.statusCode) {
-                            this.toast(response.msg)
-                        }else{
-                            location.reload()
-                        }
-                    }).catch((error) => {
-                        console.log(error)
-                    })
+                if (!this.user.phone_no || !this.user.phone_no.match(/1\d{10}/)){
+                    this.toast('请输入正确的手机号码')
+                    return
                 }
-
+                getItems({
+                    user_name: this.user.user_name,
+                    phone_no: this.user.phone_no,
+                    order_id: this.$route.query.order_id
+                }).then((response) => {
+                    if(0 !== response.statusCode){
+                        this.toast(response.msg)
+                        return
+                    }else{
+                        this.toast('领取成功,了解更多活动详情！')
+                        this.$router.push('/')
+                    }
+                }).catch((error) => {
+                    console.log(error)
+                })
             },
             toast(c){
                 var _this = this

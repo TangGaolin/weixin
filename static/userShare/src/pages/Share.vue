@@ -72,6 +72,7 @@
                     url: location.href.split('#')[0],
                     functions:['onMenuShareAppMessage','hideMenuItems']
                 }).then((response) => {
+                    response.debug = false
                     wx.config(response)
                     wx.ready(() => {
                         wx.hideMenuItems({
@@ -84,10 +85,10 @@
                             ] // 要隐藏的菜单项
                         });
                         wx.onMenuShareAppMessage({
-                            title: '赠送', // 分享标题
+                            title: '美丽同行，送您夏日健康美', // 分享标题
                             desc: '走进德理堂，寻觅健康美', // 分享描述
                             link: 'http://dm-weixin.tanggaolin.com/activity/getUserShare?order_id=' + this.order_id, //
-                            imgUrl: 'https://mmbiz.qpic.cn/mmbiz_jpg/4ta2hGQS1TJODnIXtpuPiblQUwNAxbQdBU49sQ4aU7ibVlutsmqLrIvOahQwS2BxBHAq6DibqHXrpNdreMpzz4lIw/640', // 分享图标
+                            imgUrl: 'https://mmbiz.qlogo.cn/mmbiz_jpg/kvkOHnItLJjqiaI8QOQ0Nxnt0VeXzNIM4iammqJA72FwUcF7JAtl2sZ2OrlZm39tAZNUPHkSZw7J9rEh3hUXVDOQ/0?wx_fmt=jpeg', // 分享图标
                             type: 'link', // 分享类型,music、video或link，不填默认为link
                             dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
                         })

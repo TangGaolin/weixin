@@ -16,6 +16,10 @@
         padding: 0;
         margin: 0;
     }
+    *{
+        padding: 0;
+        margin: 0;
+    }
     #app {
         font-family: 'Avenir', Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
@@ -68,6 +72,17 @@
     button:focus {
         outline:none;
     }
+
+    .toast {
+        position:fixed;
+        top:40%;
+        margin-top:-28px;
+        width:100%;
+        font-size:16px;
+        text-align:center;
+        z-index:10
+    }
+    .toast>p{display:inline-block;margin:0 auto;padding:16px;color:#fff;background-color:rgba(0,0,0,.8);border-radius:5px}
 
 
 </style>
