@@ -101,9 +101,6 @@
                 dialogContent: "",
             }
         },
-        created() {
-//            this.wxConfig()
-        },
         methods: {
             buyItem() {
                 buyItem(this.orderDetail).then((response) => {

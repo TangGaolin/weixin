@@ -52,9 +52,6 @@
                 this.dialogContent = ""
                 this.dialogShow = false
             },
-            sharePage() {
-
-            },
             getOrderInfo(){
                 getOrderInfo(this.$route.query).then((response) => {
                     this.orderDetail = response.data

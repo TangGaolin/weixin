@@ -36,7 +36,6 @@
                 this.dialogContent = ""
                 this.dialogShow = false
             },
-
             getOrderDetail(){
                 getOrderInfo(this.$route.query).then((response) => {
                     this.orderDetail = response.data
